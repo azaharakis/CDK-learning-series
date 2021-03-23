@@ -26,9 +26,32 @@ is being deployed to. You can find out more about this [here](https://docs.aws.a
 
 #### Output
 You will notice a `cdk.out` directory that is created when running `cdk deploy`. This is the cloud formation templates that are generated as part of this workflow
-We have created a FooStack, which will hold the scope of our Cloudformation constructs
+We have created a LearningSeriesStack, which will hold the scope of our Cloudformation constructs
 
 ![Stack we created](docs/project.png)
 
 ### Additional information on CDK basics
 [learn more here](https://docs.aws.amazon.com/cdk/latest/guide/apps.html)
+
+## Part 2: CDK Constructs
+
+### Application (App)
+The root of our CDK application. This is the construct that drives the
+creation in this of a single LearningSeriesStack that encapsulates the constructs within it
+
+### Stack (LearningSeriesStack)
+The LearningSeriesStack is where we define the initial constructs that make up the components
+of the CDK app.
+
+### Constructs (SrcRepository, BuildProject)
+The Stack has two constructs a src repository, and a build project.  The code commit source repository feeds into the
+build project in order to do work against it.
+
+![Stack we created](docs/project-with-constructs.png)
+
+![Stack in the console](docs/stack.png)
+
+### Stack Encapsulation
+In order for a stack to hold ownership of constructs. It needs to know the context in which these constructs are created.
+The CDK does this by accepting a scope (`this`) argument as the first parameter to each construct. This is a ubiquitous trait of all classes
+that extend the Construct class.
