@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "target": "ES2018",
+    "module": "commonjs",
+    "lib": ["es2018"],
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "useDefineForClassFields": false
+  }
+}
