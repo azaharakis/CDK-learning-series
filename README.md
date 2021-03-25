@@ -41,11 +41,11 @@ creation in this of a single LearningSeriesStack that encapsulates the construct
 
 ### Stack (LearningSeriesStack)
 The LearningSeriesStack is where we define the initial constructs that make up the components
-of the CDK app.
+of the CDK app. 
 
 ### Constructs (SrcRepository, BuildProject)
 The Stack has two constructs a src repository, and a build project.  The code commit source repository feeds into the
-build project in order to do work against it.
+build project in order to do work against it. 
 
 ![Stack we created](docs/project-with-constructs.png)
 
@@ -55,3 +55,23 @@ build project in order to do work against it.
 In order for a stack to hold ownership of constructs. It needs to know the context in which these constructs are created.
 The CDK does this by accepting a scope (`this`) argument as the first parameter to each construct. This is a ubiquitous trait of all classes
 that extend the Construct class.
+
+## Part 3: Adding a pipeline
+In Part 2 we created two CDK constructs. A repository and a BuildProject in order to show how a Stack encapsulates
+constructs you put within it but it's not very useful. The repository is empty, and we didn't give codebuild a
+way to do anything with that repository. In order to make this more useful we'll add a pipeline to handle the orchestration
+of triggering a run so that we may feed src code changes into a buildProject to do work. Our stack will now
+look something like this.
+
+![Stack in the console](docs/project-with-constructs-pipeline.png)
+
+However, there is another problem. We need to initialize our repository with code. Declarative expressing using the CDK is currently not
+possible. (At least not that I know of). So this project is fitted with a script in order to initialize a code commit repository which
+is then used in our CDK Stack through `Repository.fromRepositoryName` you can run this script as follows `sh ./scripts/init`
+
+### Construct Types:
+
+Now is a good time to talk about the construct types. Constructs can offer be referred to by L1, L2, and L3 this is a discription given
+to set the expectations of scope for a construct. For example L1 constructs are exactly the resources defined by AWS CloudFormation—no more, no less.
+L2 level constructs are what we have been operating with, they are higher levels of abstraction that typically provide sensible defaults
+to L1 constructs in order to do something typical.

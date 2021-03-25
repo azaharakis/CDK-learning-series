@@ -1,0 +1,2 @@
+#!/bin/sh
+aws codecommit delete-repository --repository-name "foo-repository"

@@ -1,0 +1,4 @@
+#!/bin/sh
+aws codecommit create-repository --repository-name "foo-repository" --repository-description "foo repository" || true
+git remote add codecommit codecommit::us-west-2://foo-repository || true
+git push codecommit main
