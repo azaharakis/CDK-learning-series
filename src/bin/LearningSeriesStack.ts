@@ -10,6 +10,7 @@ import {
   CodeBuildAction,
   CodeCommitSourceAction,
 } from "@aws-cdk/aws-codepipeline-actions";
+import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
 
 export class LearningSeriesStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -20,6 +21,7 @@ export class LearningSeriesStack extends Stack {
       operations against it
      */
     const sourceArtifact = new Artifact();
+    const cloudAssemblyArtifact = new Artifact();
     /*
       Creating a repository with source and a branch has to be done outside of the CDK. So in this case
       we create a cloudformation reference to the repository that was created outside of the CDK instead.
@@ -50,38 +52,32 @@ export class LearningSeriesStack extends Stack {
     });
 
     /*
-      The pipeline construct ties the 2 constructs together using Action constructs which are codepipeline wrappers
-      that provide the glue to orchestrate these un-opinionated constructs (Repository, BuildProject).
-      you can see the usage of the artifact we made earlier how we feed it into the different actions so that each
-      action can perform "work against it. In this case we pass the sourceArtifact into the CodeCommitSourceAction
-      and it adds the src files to it. The CodeBuild action then receives it as input so it can perform the `ls`
-      command to list the files.
+      The CDK pipeline is a higher level of abstraction over the earlier pipeline construct. It offers the ability to rebuild
+      your infrastructure using the synthAction command. Where as before we were manually running cdk deploy in our terminal.
     */
-    new Pipeline(this, "Pipeline", {
-      stages: [
-        {
-          stageName: "Source",
-          actions: [
-            new CodeCommitSourceAction({
-              actionName: "repository-foo-source",
-              output: sourceArtifact,
-              repository,
-              // When a change occurs in this branch trigger the pipeline
-              branch: "main",
-            }),
-          ],
-        },
-        {
-          stageName: "Build",
-          actions: [
-            new CodeBuildAction({
-              input: sourceArtifact,
-              actionName: "do-some-kind-of-build",
-              project,
-            }),
-          ],
-        },
-      ],
+    const pipeline = new CdkPipeline(this, "CdkPipeline", {
+      sourceAction: new CodeCommitSourceAction({
+        actionName: "repository-foo-source",
+        output: sourceArtifact,
+        repository,
+        // When a change occurs in this branch trigger the pipeline
+        branch: "main",
+      }),
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact,
+        cloudAssemblyArtifact,
+        installCommand: "npm ci",
+        synthCommand: "./node_modules/.bin/cdk synth",
+      }),
+      selfMutating: true,
+      cloudAssemblyArtifact,
     });
+    pipeline.addStage("RunCmd").addActions(
+      new CodeBuildAction({
+        input: sourceArtifact,
+        actionName: "ls",
+        project,
+      })
+    );
   }
 }

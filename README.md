@@ -75,3 +75,13 @@ Now is a good time to talk about the construct types. Constructs can offer be re
 to set the expectations of scope for a construct. For example L1 constructs are exactly the resources defined by AWS CloudFormation—no more, no less.
 L2 level constructs are what we have been operating with, they are higher levels of abstraction that typically provide sensible defaults
 to L1 constructs in order to do something typical.
+
+## Part 4: Changing the pipeline to use the CDKPipeline construct
+The CDK pipeline is a higher level of abstraction over the earlier pipeline construct. It offers the ability to rebuild
+your infrastructure using the `synthAction` property. Where as before we were manually running cdk deploy in our terminal.
+
+![Stages](docs/cdkpipeline-stages.png)
+
+`SimpleSynthAction.standardNpmSynth` adds the following 2 stages in our pipeline. We have also created a new artifact called
+`cloudAssemblyArtifact`. Remember in part one we spoke about the cdk.out directory. This artifact is used to capture these templates when we `synth` 
+so that the pipeline may re-deploy our new infra changes, when changes are detected. 
